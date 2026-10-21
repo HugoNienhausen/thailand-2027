@@ -421,3 +421,32 @@ ul.plain { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: .9
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+
+/* ---------- Fotos ---------- */
+.ph { margin: 0; min-width: 0; }
+.ph-img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 12px; background: var(--bg-2); }
+.ph figcaption { display: flex; justify-content: space-between; gap: 4px 12px; flex-wrap: wrap; font-size: .7rem; line-height: 1.3; color: var(--muted); margin-top: 5px; }
+.ph figcaption a { color: var(--muted); text-decoration: none; white-space: nowrap; }
+.ph figcaption a:hover { text-decoration: underline; }
+.zone.has-photo { min-height: 156px; }
+.zone-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.zone.has-photo::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, color-mix(in srgb, var(--zc) 18%, transparent) 0%, color-mix(in srgb, var(--zc) 55%, transparent) 55%, color-mix(in srgb, var(--zc) 82%, #1B2D4A) 100%); }
+.zone > span:not(.zone-n) { position: relative; z-index: 2; }
+.zone .zone-n { z-index: 2; }
+.zone.has-photo .zone-n { opacity: .32; }
+.ort-head.has-photo { min-height: 230px; display: flex; flex-direction: column; justify-content: flex-end; }
+.ort-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.ort-head.has-photo::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(27,45,74,.08) 0%, rgba(27,45,74,.25) 45%, color-mix(in srgb, var(--zc) 80%, #1B2D4A) 100%); }
+.ort-head > :not(.zone-n, .ort-img, .ph-over) { position: relative; z-index: 2; }
+.ort-head .zone-n { z-index: 2; }
+.ph-over { position: absolute; right: 10px; top: 10px; z-index: 3; font-size: .66rem; font-weight: 600; color: #fff; text-decoration: none; background: rgba(0,0,0,.38); padding: 3px 9px; border-radius: 999px; text-shadow: none; max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hotel-photo { margin: -14px -16px 0; }
+.hotel-photo .ph-img { border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0; aspect-ratio: 2 / 1; }
+.hotel-photo figcaption { padding: 0 16px; }
+.tl-photos { display: grid; gap: 8px; margin-top: 8px; }
+.tl-photos.two { grid-template-columns: 1fr 1fr; }
+@media (max-width: 480px) { .tl-photos.two { grid-template-columns: 1fr; } }
+.tl-photo .ph-img { aspect-ratio: 16 / 10; }
+.credits { list-style: none; padding: 0; margin: 8px 0 0; font-size: .78rem; color: var(--muted); display: grid; gap: 3px; }
+.credits a { color: var(--ink-2); }

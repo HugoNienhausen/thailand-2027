@@ -1,5 +1,5 @@
 /* Thailand 2027 – Service Worker: App-Hülle offline verfügbar machen. Bei Änderungen VERSION hochzählen. */
-const VERSION = "th27-v1";
+const VERSION = "th27-v2";
 const SHELL = ["./", "./index.html", "./app.css", "./app.js", "./data.js", "./manifest.webmanifest", "./img/cover.jpg", "./img/sixty.png", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png", "./icons/favicon-32.png"];
 const FONT_CACHE = "th27-fonts";
 

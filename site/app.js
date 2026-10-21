@@ -202,6 +202,24 @@
       '<text class="km" x="120" y="24" text-anchor="middle">ca. ' + k1.toLocaleString("de-DE") + ' km</text><text class="km" x="280" y="24" text-anchor="middle">ca. ' + k2.toLocaleString("de-DE") + " km</text></svg>";
   }
 
+  /* ---------- Fotos (Wikimedia Commons, Lizenzen unter Infos → Bildnachweise) ---------- */
+  const PH = T.photos || {};
+  const hasPhoto = (k) => !!(k && PH[k]);
+  const photoSrc = (k, w) => "img/p/" + k + "-" + w + ".jpg";
+  function photoImg(k, cls, sizes, eager) {
+    const ph = PH[k]; if (!ph) return "";
+    return '<img class="' + cls + '" src="' + photoSrc(k, 640) + '" srcset="' + photoSrc(k, 640) + " 640w, " + photoSrc(k, 1200) + ' 1200w" sizes="' + (sizes || "(min-width: 860px) 780px, 100vw") + '" alt="' + h(ph.cap) + '"' + (eager ? "" : ' loading="lazy" decoding="async"') + ">";
+  }
+  const photoCredit = (ph) => "Foto: " + h(ph.by) + " · " + h(ph.lic);
+  function photoFigure(k, cls) {
+    const ph = PH[k]; if (!ph) return "";
+    return '<figure class="ph ' + (cls || "") + '">' + photoImg(k, "ph-img") + "<figcaption><span>" + h(ph.cap) + '</span><a href="' + h(ph.page) + '" target="_blank" rel="noopener">' + photoCredit(ph) + "</a></figcaption></figure>";
+  }
+  function photoOver(k) { const ph = PH[k]; return ph ? '<a class="ph-over" href="' + h(ph.page) + '" target="_blank" rel="noopener">' + photoCredit(ph) + "</a>" : ""; }
+  function zoneCard(p, sub) {
+    return '<a class="zone' + (hasPhoto(p.photo) ? " has-photo" : "") + '" href="#ort-' + p.id + '" style="--zc:' + p.color + '">' + (hasPhoto(p.photo) ? photoImg(p.photo, "zone-img", "(min-width: 600px) 300px, 50vw") : "") + '<span class="zone-n">' + (p.zone || "✈") + '</span><span class="zone-k">' + (p.zone ? "Zone " + p.zone : "Stopover") + " · " + h(p.country) + '</span><span class="zone-name">' + h(p.name) + '</span><span class="zone-d">' + sub + "</span></a>";
+  }
+
   /* ---------- Views ---------- */
   function viewStart() {
     const ph = phase(), ti = todayIndex();
@@ -217,7 +235,7 @@
     } else {
       cd = '<div class="card-orange countdown"><div class="eyebrow" style="color:rgba(255,255,255,.85)">Nach der Reise</div><div class="cd-title">23 Tage, 2 Länder, 7 Zonen – geschafft.</div><p class="small" style="margin-top:6px">Bingo, Food-Challenge und Quiz bleiben gespeichert.</p></div>';
     }
-    const zones = T.places.map((p) => '<a class="zone" href="#ort-' + p.id + '" style="--zc:' + p.color + '"><span class="zone-n">' + (p.zone || "✈") + '</span><span class="zone-k">' + (p.zone ? "Zone " + p.zone : "Stopover") + " · " + h(p.country) + '</span><span class="zone-name">' + h(p.name) + '</span><span class="zone-d">' + h(p.dates) + " · " + p.nights + (p.nights === 1 ? " Nacht" : " Nächte") + "</span></a>").join("");
+    const zones = T.places.map((p) => zoneCard(p, h(p.dates) + " · " + p.nights + (p.nights === 1 ? " Nacht" : " Nächte"))).join("");
     return {
       html:
         '<section class="hero-head"><h1>Thailand<span class="yr">2027</span></h1><p class="sub">' + h(T.subtitle) + " · 30. Januar bis 21. Februar</p></section>" +
@@ -259,6 +277,7 @@
     let body = '<div class="tl-h">' + fmt(it.h) + "</div>";
     if (it.d) body += '<div class="tl-d">' + fmt(it.d) + "</div>";
     if (f) body += flightCard(f);
+    if (it.photo) { const ks = [].concat(it.photo).filter(hasPhoto); if (ks.length) body += '<div class="tl-photos' + (ks.length > 1 ? " two" : "") + '">' + ks.map((k) => photoFigure(k, "tl-photo")).join("") + "</div>"; }
     if (it.stops) body += '<ul class="stops">' + it.stops.map((s) => '<li class="stop"><div><b>' + h(s.name) + "</b>" + (s.note ? "<small>" + h(s.note) + "</small>" : "") + "</div>" + mapBtn(s.map, "") + "</li>").join("") + "</ul>";
     const meta = [costBadge(it.cost), it.opt ? '<span class="badge badge-opt">optional</span>' : "", linkBtn(it.link), mapBtn(it.map), phoneBtn(it.phone)].filter(Boolean).join("");
     if (meta) body += '<div class="tl-meta">' + meta + "</div>";
@@ -302,7 +321,7 @@
   const seg = (on) => '<div class="seg"><a href="#orte"' + (on === "orte" ? ' class="on"' : "") + '>Ziele</a><a href="#hotels"' + (on === "hotels" ? ' class="on"' : "") + '>Hotels</a><a href="#karte"' + (on === "karte" ? ' class="on"' : "") + '>Karte</a></div>';
   function viewOrte() {
     return { html: '<div class="eyebrow">Orte</div><h1 class="view-title">Wo wir hinfahren</h1>' + seg("orte") + '<div class="zones">' +
-      T.places.map((p) => '<a class="zone" href="#ort-' + p.id + '" style="--zc:' + p.color + '"><span class="zone-n">' + (p.zone || "✈") + '</span><span class="zone-k">' + (p.zone ? "Zone " + p.zone : "Stopover") + " · " + h(p.country) + '</span><span class="zone-name">' + h(p.name) + '</span><span class="zone-d">' + h(p.tagline) + "</span></a>").join("") + "</div>" };
+      T.places.map((p) => zoneCard(p, h(p.tagline))).join("") + "</div>" };
   }
   function viewOrt(id) {
     const p = place(id); if (!p) return viewOrte();
@@ -316,7 +335,7 @@
     }));
     return {
       html: '<a class="backlink" href="#orte">' + icon("left") + 'Alle Orte</a>' +
-        '<header class="ort-head" style="--zc:' + p.color + '"><span class="zone-n">' + (p.zone || "✈") + '</span><div class="zone-k">' + (p.zone ? "Zone " + p.zone : "Stopover") + " · " + h(p.country) + "</div><h1>" + h(p.name) + '</h1><div class="meta"><span>' + h(p.dates) + "</span><span>" + p.nights + (p.nights === 1 ? " Nacht" : " Nächte") + "</span></div></header>" +
+        '<header class="ort-head' + (hasPhoto(p.photo) ? " has-photo" : "") + '" style="--zc:' + p.color + '">' + (hasPhoto(p.photo) ? photoImg(p.photo, "ort-img", "(min-width: 860px) 780px, 100vw", true) + photoOver(p.photo) : "") + '<span class="zone-n">' + (p.zone || "✈") + '</span><div class="zone-k">' + (p.zone ? "Zone " + p.zone : "Stopover") + " · " + h(p.country) + "</div><h1>" + h(p.name) + '</h1><div class="meta"><span>' + h(p.dates) + "</span><span>" + p.nights + (p.nights === 1 ? " Nacht" : " Nächte") + "</span></div></header>" +
         '<p class="ort-text">' + h(p.text) + "</p>" +
         '<div class="sec"><h2>Unterkunft</h2></div>' + hotels.map(hotelCard).join("") +
         '<div class="sec"><h2>Programm</h2><a href="#tag-' + days[0].n + '">Zum Tagesplan ›</a></div><ul class="ov">' + days.map((d) => { const dt = parseISO(d.date); return '<li><a href="#tag-' + d.n + '"><div class="d"><small>' + WD2[dt.getDay()] + "</small><b>" + dt.getDate() + "." + (dt.getMonth() + 1) + '</b></div><div><div class="t">' + h(d.title) + '</div><div class="w">' + d.items.filter((it) => it.h && it.k !== "hotel").slice(0, 3).map((it) => it.h.replace(/\[\[|\]\]|\{\{|\}\}|\(\(|\)\)|\*\*/g, "")).join(" · ") + "</div></div></a></li>"; }).join("") + "</ul>" +
@@ -326,7 +345,7 @@
   }
   function hotelCard(ho) {
     const p = place(ho.place), n = nightsBetween(ho.checkIn, ho.checkOut);
-    return '<div class="card hotel" style="--zc:' + (p ? p.color : "var(--line)") + '"><div class="row" style="justify-content:space-between"><span class="chip chip-zone" style="--zc:' + p.color + '">' + h(p.name) + "</span>" + (ho.status === "open" ? '<span class="badge badge-open">' + icon("alert") + "noch offen</span>" : '<span class="badge badge-ok">' + icon("check") + "im Plan</span>") + "</div><h3>" + h(ho.name) + '</h3><div class="dates"><div>Check-in<b>' + fmtMid(ho.checkIn) + "</b></div><div>Check-out<b>" + fmtMid(ho.checkOut) + '</b></div></div><div class="row"><span class="badge">' + n + (n === 1 ? " Nacht" : " Nächte") + "</span>" + (ho.status === "open" ? mapBtn(ho.map, "Hotels suchen") : mapBtn(ho.map, "Google Maps")) + '<a class="btn btn-sm" href="#tag-' + (p.days.find((dn) => day(dn).date === ho.checkIn) || p.days[0]) + '">' + icon("calendar") + "Tag</a></div></div>";
+    return '<div class="card hotel' + (hasPhoto(ho.photo) ? " has-photo" : "") + '" style="--zc:' + (p ? p.color : "var(--line)") + '">' + (hasPhoto(ho.photo) ? photoFigure(ho.photo, "hotel-photo") : "") + '<div class="row" style="justify-content:space-between"><span class="chip chip-zone" style="--zc:' + p.color + '">' + h(p.name) + "</span>" + (ho.status === "open" ? '<span class="badge badge-open">' + icon("alert") + "noch offen</span>" : '<span class="badge badge-ok">' + icon("check") + "im Plan</span>") + "</div><h3>" + h(ho.name) + '</h3><div class="dates"><div>Check-in<b>' + fmtMid(ho.checkIn) + "</b></div><div>Check-out<b>" + fmtMid(ho.checkOut) + '</b></div></div><div class="row"><span class="badge">' + n + (n === 1 ? " Nacht" : " Nächte") + "</span>" + (ho.status === "open" ? mapBtn(ho.map, "Hotels suchen") : mapBtn(ho.map, "Google Maps")) + '<a class="btn btn-sm" href="#tag-' + (p.days.find((dn) => day(dn).date === ho.checkIn) || p.days[0]) + '">' + icon("calendar") + "Tag</a></div></div>";
   }
   function viewHotels() {
     const open = T.hotels.filter((x) => x.status === "open").length;
@@ -475,6 +494,7 @@
       '<div class="sec"><h2>Benehmen</h2></div><div class="card"><ul class="tips">' + N.etiquette.map((t) => "<li>" + icon("sparkle") + "<span>" + h(t) + "</span></li>").join("") + "</ul></div>" +
       '<div class="sec"><h2>Gesundheit</h2></div><div class="card"><ul class="tips">' + N.health.map((t) => "<li>" + icon("sparkle") + "<span>" + h(t) + "</span></li>").join("") + "</ul></div>" +
       '<div class="sec"><h2>Steckdosen</h2></div>' + kv(N.plugs) + '<div class="sec"><h2>Apps für unterwegs</h2></div>' + kv(N.apps) +
+      '<div class="sec"><h2>Bildnachweise</h2></div><p class="src">Alle Ortsfotos stammen von Wikimedia Commons und stehen unter freien Lizenzen (CC BY / CC BY-SA); Hotelfotos zeigen die Umgebung, nicht das Hotel selbst. Das Coverfoto stammt aus dem Original-PDF.</p><ul class="credits">' + Object.keys(PH).map((k) => '<li><a href="' + h(PH[k].page) + '" target="_blank" rel="noopener">' + h(PH[k].cap) + "</a> – " + h(PH[k].by) + " (" + h(PH[k].lic) + ")</li>").join("") + "</ul>" +
       '<div class="sec"><h2>Quellen</h2></div><p class="src">Stand Oktober 2026. ' + N.sources.map((s) => '<a href="' + h(s.url) + '" target="_blank" rel="noopener">' + h(s.label) + "</a>").join(" · ") + "</p>" };
   }
   function viewNotfall() {

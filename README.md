@@ -51,3 +51,20 @@ Bei jeder Änderung in `sw.js` die `VERSION` hochzählen (`th27-v2`, …), damit
 Wenn irgendwann eine „richtige“ iOS-App gewünscht ist: Der Ordner `site` lässt sich unverändert mit
 [Capacitor](https://capacitorjs.com) in ein Xcode-Projekt packen. Dafür braucht es einen Mac mit Xcode und
 einen Apple-Developer-Account (99 $/Jahr) – für die Familie ist die PWA-Variante oben der einfachere Weg.
+
+## Fotos
+
+Die Fotos der Orte, Highlights und Hotel-Umgebungen liegen in `site/img/p/` (je `<key>-640.jpg` und `<key>-1200.jpg`).
+Sie stammen von Wikimedia Commons (CC BY / CC BY-SA / CC0); Urheber und Lizenz stehen in `site/data.js`
+unter `photos` und werden in der App unter **Mehr → Infos → Bildnachweise** angezeigt. Hotelfotos zeigen bewusst
+nur die Umgebung, weil die Hotelbilder der Buchungsportale nicht frei verwendbar sind.
+
+Eigene Fotos einbauen (z. B. das echte Hotel):
+
+1. Bild als JPEG in zwei Breiten ablegen: `site/img/p/<key>-640.jpg` und `site/img/p/<key>-1200.jpg`
+   (z. B. `magick foto.jpg -resize 1200x\> -quality 74 site/img/p/reddoor-1200.jpg`).
+2. In `site/data.js` unter `photos` einen Eintrag ergänzen:
+   `reddoor: { cap: "Chiang Mai RedDoor Pool Villa", by: "Paula", lic: "eigenes Foto", page: "" }`.
+3. Beim Hotel, Ort oder Tagespunkt `photo: "reddoor"` setzen (bei Tagespunkten geht auch eine Liste: `photo: ["a", "b"]`).
+4. `VERSION` in `site/sw.js` hochzählen und pushen.
+
