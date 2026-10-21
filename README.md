@@ -22,7 +22,7 @@ python3 -m http.server 8080
 
 ## Veröffentlichen (damit die Familie sie nutzen kann)
 
-Eingerichtet: **GitHub Pages**. Jeder Push auf `main` veröffentlicht den Ordner `site/` automatisch
+Eingerichtet: **GitHub Pages** unter **https://sixtyundsexy.com** (Datei `site/CNAME`). Jeder Push auf `main` veröffentlicht den Ordner `site/` automatisch
 (Workflow in `.github/workflows/pages.yml`). Die Seite ist per `noindex` und `robots.txt` von Suchmaschinen ausgenommen.
 
 Alternativen, falls gewünscht:
